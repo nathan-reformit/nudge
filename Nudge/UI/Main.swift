@@ -317,18 +317,22 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                         LogManager.notice("Assessing macOS version range for active exploits (cross major version): \(versionsToCheck) ", logger: sofaLog)
                     }
 
-                    // Count actively exploited CVEs in the appropriate filtered versions
+                    // Count CVEs in the appropriate filtered versions
+                    var totalAnyCVEsInRange = 0
                     for osVersion in macOSSOFAAssets {
                         if versionsToCheck.contains(osVersion.latest.productVersion) {
                             totalActivelyExploitedCVEs += osVersion.latest.activelyExploitedCVEs.count
+                            totalAnyCVEsInRange += osVersion.latest.cves.count
                         }
                         for securityRelease in osVersion.securityReleases {
                             if versionsToCheck.contains(securityRelease.productVersion) {
                                 totalActivelyExploitedCVEs += securityRelease.activelyExploitedCVEs.count
+                                totalAnyCVEsInRange += securityRelease.cves.count
                             }
                         }
                     }
                     let activelyExploitedCVEs = totalActivelyExploitedCVEs > 0
+                    let anyCVEsInRange = totalAnyCVEsInRange > 0
 
                     let presentCVEs = selectedOS!.cves.count > 0
                     let slaExtension: TimeInterval
@@ -367,10 +371,9 @@ class AppDelegate: NSObject, NSApplicationDelegate {
                     // Check if we should disable Nudge for standard installs
                     // Exit only if:
                     // 1. disableNudgeForStandardInstalls is enabled
-                    // 2. Target OS has no CVEs
-                    // 3. No actively exploited CVEs exist in intermediate versions (respects minorVersionRecalculationThreshold)
-                    if OptionalFeatureVariables.disableNudgeForStandardInstalls && !presentCVEs && !activelyExploitedCVEs {
-                        LogManager.notice("No known CVEs for \(selectedOS!.productVersion), no actively exploited CVEs in intermediate versions, and disableNudgeForStandardInstalls is set to true", logger: sofaLog)
+                    // 2. No CVEs exist anywhere in the update path (including non-actively exploited CVEs in intermediate versions)
+                    if OptionalFeatureVariables.disableNudgeForStandardInstalls && !anyCVEsInRange {
+                        LogManager.notice("No known CVEs in version range up to \(selectedOS!.productVersion), and disableNudgeForStandardInstalls is set to true", logger: sofaLog)
                         AppStateManager().exitNudge()
                     }
                     LogManager.notice("SOFA Actively Exploited CVEs (across version range): \(activelyExploitedCVEs)", logger: sofaLog)
