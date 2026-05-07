@@ -38,7 +38,8 @@ struct BlurManager {
                 // Force window to front regardless of space constraints
                 // This will trigger a space switch if needed
                 if #available(macOS 14, *) {
-                    NSApp.activate()
+                    // NSApp.activate() co-operative API that doesn't allow Nudge to properly activate
+                    NSApp.activate(ignoringOtherApps: true)
                 } else {
                     NSApp.activate(ignoringOtherApps: true)
                 }
@@ -129,7 +130,8 @@ struct BlurManager {
         // Ensure main window stays on top and visible
         mainWindow.makeKeyAndOrderFront(nil)
         if #available(macOS 14, *) {
-            NSApp.activate()
+            // NSApp.activate() co-operative API that doesn't allow Nudge to properly activate
+            NSApp.activate(ignoringOtherApps: true)
         } else {
             NSApp.activate(ignoringOtherApps: true)
         }
@@ -164,7 +166,8 @@ struct AppStateManager {
         if DateManager().pastRequiredInstallationDate() && OptionalFeatureVariables.aggressiveUserFullScreenExperience {
             UIUtilities().centerNudge()
             if #available(macOS 14, *) {
-                NSApp.activate()
+                // NSApp.activate() co-operative API that doesn't allow Nudge to properly activate
+                NSApp.activate(ignoringOtherApps: true)
             } else {
                 NSApp.activate(ignoringOtherApps: true)
             }
@@ -177,7 +180,8 @@ struct AppStateManager {
             LogManager.notice("Bypassing activation due to full screen bugs in macOS", logger: uiLog)
         } else {
             if #available(macOS 14, *) {
-                NSApp.activate()
+                // NSApp.activate() co-operative API that doesn't allow Nudge to properly activate
+                NSApp.activate(ignoringOtherApps: true)
             } else {
                 NSApp.activate(ignoringOtherApps: true)
             }

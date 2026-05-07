@@ -4,6 +4,14 @@ All notable changes to this project will be documented in this file.
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [2.1.2] - 2026-05-07
+Requires macOS 12.0 and higher.
+
+### Fixed
+- Corrected activation logic when requiredInstallationDate is passed
+ - Addresses [704](https://github.com/macadmins/nudge/issues/704)
+ - **Important Note:** macOS 14 introduced `NSApp​.activate()` as a replacement for `NSApp​.activate(ignoring​Other​Apps: true)`, but the new API uses _cooperative_ _activation_ — it only gains focus if the current frontmost app _voluntarily_ _yields_. Chrome (and any other app) never does this, so Nudge ends up sitting just behind it. When Apple removes this API in a future macOS version, Nudge may not be able to gaurantee it launches in front of all applications.
+
 ## [2.1.2] - 2026-03-30
 Requires macOS 12.0 and higher.
 
